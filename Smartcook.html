@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartCook</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>SmartCook</h1>
+  <input type="text" id="searchField" placeholder="Search recipes..." oninput="filterRecipes()">
+</header>
+<nav id="filters">
+  <label for="sort">Sort by:</label>
+  <select id="sort" onchange="sortRecipes(event)">
+    <option value="name">Name</option>
+    <option value="difficulty">Difficulty</option>
+    <option value="duration">Duration</option>
+  </select>
+</nav>
+<main id="recipe-list">
+</main>
+<script src="script.js"></script>
+</body>
+</html>
