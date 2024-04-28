@@ -5,31 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartCook</title>
     <style>
-        /* Styly pro celou stránku */
         body {
             margin: 0;
             padding: 0;
             background-color: #fac564;
             background-image: url('https://www.transparenttextures.com/patterns/food.png');
             font-family: Arial, sans-serif;
-            text-align: center; /* Zarovnání textu ve středu */
+            text-align: center;
         }
 
-        /* Styly pro nadpis */
         h1 {
             color: rgb(38,44,60);
-            margin-top: 50px; /* Odsazení od horního okraje */
+            margin-top: 50px;
         }
 
-        /* Styl pro kontejner receptů */
         .recipes-container {
-            display: flex; /* Použití flexboxu */
-            flex-wrap: wrap; /* Zalomení na další řádky */
-            justify-content: center; /* Zarovnání doprostřed */
-            margin-top: 20px; /* Odsazení od nadpisu */
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
         }
 
-        /* Styl pro jednotlivé recepty */
         .recipe {
             color: rgb(38,44,60);
             width: 300px;
@@ -39,38 +35,35 @@
             border-radius: 5px;
             background-color: rgba(240, 248, 255, 0.9);
             box-shadow: 0 0 8px rgb(38,44,60);
-            transition: transform 0.3s; /* Plynulý přechod */
-            cursor: pointer; /* Změna kurzoru na ruku při najetí */
+            transition: transform 0.3s;
+            cursor: pointer;
         }
 
-        /* Při najetí myší na recept */
         .recipe:hover {
-            transform: scale(1.05); /* Zvětšení o 5% */
+            transform: scale(1.05);
         }
 
-        /* Styl pro modální okno */
         .modal {
-            display: none; /* Okno není zobrazeno */
+            display: none;
             position: fixed;
-            z-index: 1; /* Překrývá všechny ostatní prvky */
+            z-index: 1;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto; /* Scrollování, pokud obsah přesahuje velikost okna */
-            background-color: rgba(0,0,0,0.4); /* Částečně průhledné pozadí */
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
         }
 
-        /* Styl pro obsah modálního okna */
+
         .modal-content {
             background-color: #fefefe;
-            margin: 10% auto; /* Zarovnání na střed */
+            margin: 10% auto;
             padding: 20px;
             border: 1px solid #888;
             width: 80%;
         }
 
-        /* Tlačítko pro zavření modálního okna */
         .close {
             color: #aaa;
             float: right;
@@ -78,7 +71,6 @@
             font-weight: bold;
         }
 
-        /* Styl pro tlačítko zavření, při najetí myší */
         .close:hover,
         .close:focus {
             color: black;
@@ -104,7 +96,7 @@
             ->getResponseData();
 
         foreach ($data['data'] as $recipe) {
-            echo "<div class='recipe' onclick='showIngredients(" . $recipe['id'] . ")'>"; // Opraveno na recipe['id']
+            echo "<div class='recipe' onclick='showIngredients(" . $recipe['id'] . ")'>";
             echo "<p><strong>Name:</strong> " . $recipe['name'] . "</p>";
             echo "<p><strong>Author:</strong> " . $recipe['author'] . "</p>";
             echo "</div>";
@@ -115,10 +107,8 @@
     ?>
 </div>
 
-<!-- Skript pro zobrazení modálního okna s ingrediencemi receptu -->
 <script>
 function showIngredients(recipe_id) {
-    // Získání ingrediencí receptu z API
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
@@ -126,17 +116,15 @@ function showIngredients(recipe_id) {
             displayIngredientsModal(ingredients);
         }
     };
-    xhr.open("GET", "get_recipe_ingredients.php?recipe_id=" + recipe_id, true); // Oprava jména parametru
+    xhr.open("GET", "get_recipe_ingredients.php?recipe_id=" + recipe_id, true);
     xhr.send();
 }
 
-    // Funkce pro zobrazení modálního okna s ingrediencemi
     function displayIngredientsModal(ingredients) {
         var modalContent = "<div class='modal-content'>";
-        modalContent += "<span class='close' onclick='closeModal()'>&times;</span>"; // Tlačítko zavření
+        modalContent += "<span class='close' onclick='closeModal()'>&times;</span>";
         modalContent += "<h2>Ingredients</h2>";
 
-        // Zkontrolujte, zda jsou ingredience polem
         if (Array.isArray(ingredients) && ingredients.length > 0) {
             modalContent += "<ul>";
             ingredients.forEach(function(ingredient) {
@@ -149,14 +137,11 @@ function showIngredients(recipe_id) {
 
         modalContent += "</div>";
 
-        // Vložení obsahu do modálního okna
         document.getElementById("modal").innerHTML = modalContent;
 
-        // Zobrazení modálního okna
         document.getElementById("modal").style.display = "block";
     }
 
-    // Funkce pro zavření modálního okna
     function closeModal() {
         document.getElementById("modal").style.display = "none";
     }
@@ -164,7 +149,6 @@ function showIngredients(recipe_id) {
 
     </div>
 
-    <!-- Modální okno pro zobrazení ingrediencí -->
     <div id="modal" class="modal"></div>
 </body>
 </html>
