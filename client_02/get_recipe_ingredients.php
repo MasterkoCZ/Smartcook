@@ -2,21 +2,24 @@
 require_once("SmartCookClient.php");
 
 try {
-    $recipe_id = isset($_GET['recipe_id']) ? $_GET['recipe_id'] : null;
+    if (isset($_GET['recipe_id'])) {
+        $response = (new SmartCookClient)
+            ->setRequestData(['recipe_id' => $_GET['recipe_id']])
+            ->sendRequest("ingredients")
+            ->getResponseData();
 
-    if ($recipe_id === null) {
-        throw new Exception('Recipe ID is missing.');
+        if ($response['stat'] === "ok") {
+            echo json_encode($response['data']);
+        } else {
+            http_response_code(400);
+            echo $response['error_message'];
+        }
+    } else {
+        http_response_code(400);
+        echo 'No recipe id provided';
     }
-
-    $response = (new SmartCookClient)
-        ->sendRequest("recipes/{$recipe_id}/ingredients")
-        ->getResponseData();
-
-    header('Content-Type: application/json');
-
-    echo json_encode($response);
-
 } catch (Exception $e) {
-    echo json_encode(['error' => $e->getMessage()]);
+    http_response_code(500);
+    echo $e->getMessage();
 }
 ?>
