@@ -55,7 +55,6 @@
             background-color: rgba(0,0,0,0.4);
         }
 
-
         .modal-content {
             background-color: #fefefe;
             margin: 10% auto;
@@ -96,7 +95,7 @@
             ->getResponseData();
 
         foreach ($data['data'] as $recipe) {
-            echo "<div class='recipe' onclick='showIngredients(" . $recipe['id'] . ")'>";
+            echo "<div class='recipe' onclick='showIngredients(" . $recipe['id'] . ")'>"; // Opraveno na recipe['id']
             echo "<p><strong>Name:</strong> " . $recipe['name'] . "</p>";
             echo "<p><strong>Author:</strong> " . $recipe['author'] . "</p>";
             echo "</div>";
@@ -109,43 +108,58 @@
 
 <script>
 function showIngredients(recipe_id) {
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            var ingredients = JSON.parse(this.responseText);
-            displayIngredientsModal(ingredients);
-        }
-    };
-    xhr.open("GET", "get_recipe_ingredients.php?recipe_id=" + recipe_id, true);
-    xhr.send();
+    fetch('get_recipe_ingredients.php?recipe_id=' + recipe_id)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("HTTP error " + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            var modalContent = "<h2>" + data.title + "</h2>";
+
+            fetch('req-ingredients.php?recipe_id=' + recipe_id)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("HTTP error " + response.status);
+                }
+                return response.text();
+            })
+            .then(text => {
+                let startIndex = text.indexOf('{');
+                let endIndex = text.lastIndexOf('}') + 1;
+                let jsonResponse = text.slice(startIndex, endIndex);
+                
+                console.log('Final JSON Response:', jsonResponse);
+                const ingredientsData = JSON.parse(jsonResponse);
+
+                if (ingredientsData.data && Array.isArray(ingredientsData.data) && ingredientsData.data.length > 0) {
+                    modalContent += "<ul>";
+                    ingredientsData.data.forEach(function(ingredient) {
+                        modalContent += "<li>" + ingredient.name + "</li>";
+                    });
+                    modalContent += "</ul>";
+                } else {
+                    modalContent += "<p>No ingredients found.</p>";
+                }
+
+                document.getElementById("modal").innerHTML = modalContent;
+                document.getElementById("modal").style.display = "block";
+            })
+            .catch(err => {
+                console.log('Chyba při zpracování ingrediencí:', err);
+            });
+        })
+        .catch(err => {
+            console.log('Chyba při získávání názvu receptu:', err);
+        });
 }
 
-    function displayIngredientsModal(ingredients) {
-        var modalContent = "<div class='modal-content'>";
-        modalContent += "<span class='close' onclick='closeModal()'>&times;</span>";
-        modalContent += "<h2>Ingredients</h2>";
-
-        if (Array.isArray(ingredients) && ingredients.length > 0) {
-            modalContent += "<ul>";
-            ingredients.forEach(function(ingredient) {
-                modalContent += "<li>" + ingredient.name + "</li>";
-            });
-            modalContent += "</ul>";
-        } else {
-            modalContent += "<p>No ingredients found.</p>";
-        }
-
-        modalContent += "</div>";
-
-        document.getElementById("modal").innerHTML = modalContent;
-
-        document.getElementById("modal").style.display = "block";
-    }
-
-    function closeModal() {
-        document.getElementById("modal").style.display = "none";
-    }
+function closeModal() {
+    document.getElementById("modal").style.display = "none";
+}
 </script>
+
 
     </div>
 
